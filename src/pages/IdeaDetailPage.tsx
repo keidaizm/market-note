@@ -95,7 +95,15 @@ export function IdeaDetailPage({ ideas, onUpdate, onDelete }: Props) {
     sustainability: null,
   });
 
-  const idea = ideas.find((i) => i.id === id);
+  const currentIndex = ideas.findIndex((i) => i.id === id);
+  const idea = currentIndex !== -1 ? ideas[currentIndex] : undefined;
+  const prevIdea = currentIndex > 0 ? ideas[currentIndex - 1] : null;
+  const nextIdea = currentIndex !== -1 && currentIndex < ideas.length - 1 ? ideas[currentIndex + 1] : null;
+
+  const navigateIdea = (targetId: string) => {
+    setMode('view');
+    navigate(`/ideas/${targetId}`);
+  };
 
   useEffect(() => {
     if (idea) {
@@ -184,7 +192,7 @@ export function IdeaDetailPage({ ideas, onUpdate, onDelete }: Props) {
     <div className="max-w-2xl mx-auto pb-8">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => navigate('/ideas')} className="text-gray-400 hover:text-gray-600 text-2xl leading-none">←</button>
+        <button onClick={() => navigate('/ideas')} className="text-gray-400 hover:text-gray-600 text-2xl leading-none" title="一覧に戻る">←</button>
         <div className="flex-1 min-w-0">
           {mode === 'edit' ? (
             <input
@@ -247,6 +255,35 @@ export function IdeaDetailPage({ ideas, onUpdate, onDelete }: Props) {
             </>
           )}
         </div>
+      </div>
+
+      {/* Prev / Next navigation */}
+      <div className="flex items-center justify-between mb-5 text-sm">
+        {prevIdea ? (
+          <button
+            onClick={() => navigateIdea(prevIdea.id)}
+            className="flex items-center gap-1.5 text-gray-500 hover:text-indigo-600 transition-colors max-w-[45%] group"
+            title={prevIdea.title}
+          >
+            <span className="text-lg leading-none group-hover:-translate-x-0.5 transition-transform">‹</span>
+            <span className="truncate">{prevIdea.title}</span>
+          </button>
+        ) : <span />}
+
+        <span className="text-gray-300 text-xs shrink-0 px-2">
+          {currentIndex + 1} / {ideas.length}
+        </span>
+
+        {nextIdea ? (
+          <button
+            onClick={() => navigateIdea(nextIdea.id)}
+            className="flex items-center gap-1.5 text-gray-500 hover:text-indigo-600 transition-colors max-w-[45%] text-right group"
+            title={nextIdea.title}
+          >
+            <span className="truncate">{nextIdea.title}</span>
+            <span className="text-lg leading-none group-hover:translate-x-0.5 transition-transform">›</span>
+          </button>
+        ) : <span />}
       </div>
 
       {/* Quick Score Panel */}
